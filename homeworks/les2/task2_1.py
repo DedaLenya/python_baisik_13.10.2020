@@ -8,4 +8,4 @@ def my_type(el):
     for el in range(len(lineT)):
         print(type(lineT[el]))
     return
-    my_type(lineT)
+my_type(lineT)
