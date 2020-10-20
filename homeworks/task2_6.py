@@ -19,3 +19,7 @@
 “ед”: [“шт.”]
 }
 """
+
+while True:
+    next_add = input(' Добавить еще продукт ? Да/Нет \n')
+    if next_add.lower()
