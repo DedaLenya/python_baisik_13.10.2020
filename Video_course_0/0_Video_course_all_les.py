@@ -1809,7 +1809,7 @@ Python
 Шаг 5
 Вызов функции информации о менеджере.
 Обработка возможных ошибок ввода пользователя.
-"""
+
 
 
 # функция для создания файла
@@ -1884,3 +1884,145 @@ def save_info(message):
         f.write(result + "\n")
 
 save_info("abc")
+
+"""
+# -----------------------------
+# Написанный файловый менеджер
+
+# main.py (файл создать)
+
+import sys
+from core import create_file, create_folder, get_list, delete_file, copy_file, save_info, change_dir
+save_info("start")
+
+try:
+    command = sys.argv[1]
+except IndexError:
+    print("Необходимо выбрать команду. help")
+else:
+    if command == "list":
+        get_list()
+
+    elif command == "create_file":
+        try:
+            name = sys.argv[2]
+        except IndexError:
+            print("отсутствует название файла")
+        else:
+            create_file(name)
+
+    elif command == "create_folder":
+        try:
+            name = sys.argv[2]
+        except IndexError:
+            print("отсутствует название папки")
+        else:
+            create_folder(name)
+
+    elif command == "delete":
+        try:
+            name = sys.argv[2]
+        except IndexError:
+            print("отсутствует название файла")
+        else:
+            delete_file(name)
+
+    elif command == "ch":
+        try:
+            name = sys.argv[2]
+        except IndexError:
+            print("отсутствует название директории")
+        else:
+            change_dir(name)
+
+
+    elif command == "copy":
+        try:
+            name = sys.argv[2]
+            new_name = sys.argv[3]
+        except IndexError:
+            print("введите название файла и нового файла")
+        else:
+            copy_file(name, new_name)
+    elif command == "help":
+        print("list - список файлов и папок")
+        print("create_file - создать файл")
+        print("create_folder - создать папку")
+        print("delete - удалить файл или папку")
+        print("copy - копировать файл или папку")
+
+    save_info("finish")
+
+# core.py файл создать
+
+def create_file(name, text=None):
+    with open(name, "w", encoding="utf-8") as f:
+        if text:
+            f.write(text)
+
+import os  # воспользуемся модулем ос для создания папки
+
+
+def create_folder(name):
+    try:
+        os.mkdir(name)
+    except FileExistsError:
+        print("Такая папка уже есть")
+
+# Шаг 3 Расширение функционала. Просмотр списка файлов и папок.
+
+def get_list(folders_omly=False):
+    result = os.listdir()
+    if folders_omly:
+        result = [f for f in result if os.path.isdir(f)]
+    print(result)
+    print(os.listdir())
+
+
+# шаг 4 Удаление файла
+
+def delete_file(name): # нейм будет путь до файла или папки
+    if os.path.isdir(name):
+        os.rmdir(name) # данная фукция удаляет по нейму только папку
+    else:
+        os.remove(name)
+
+
+# шаг 5 Копирование файла или папки
+
+import shutil # Импортируем модуль специальный
+def copy_file(name, new_name):
+    if os.path.isdir(name): # копирование дял папки
+        try:
+            shutil.copytree(name, new_name)
+        except FileExistsError:
+            print("Такая папка же уже есть")
+    else:
+        shutil.copy(name,new_name ) # теперь  копирование для файла
+
+
+# шаг 6. Запись информации о работе менеджера в файл.
+import datetime
+
+def save_info(message):
+    current_time = datetime.datetime.now()
+    result = f"{current_time} - {message}"
+    with open("log.txt", "a", encoding="utf-8") as f:
+        f.write(result + "\n")
+
+
+def change_dir(name):
+    os.chdir(name)
+    print(os.getcwd())
+
+
+if __name__ == "__main__":  # для того чтобы при импорте фукции , другой скрип не выполнялся
+    create_file("text.dat")  # файл создался
+    create_file("text.dat", "some text")  # теперь проверим добавился ли в него текст
+    create_folder("new_f1")
+    get_list(True)
+    delete_file("new2") # Удалит папку
+    delete_file("text.dat") # Удалит файл
+    copy_file("new_f", "new_f2")
+    copy_file("text.dat", "text1.dat")
+    save_info("abc")
